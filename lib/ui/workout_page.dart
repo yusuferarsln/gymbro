@@ -1,257 +1,152 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gymbro/models/move_model.dart';
-import 'package:gymbro/providers/move_provider.dart';
+import 'package:gymbro/constants/appcolors.dart';
+import 'package:gymbro/extensions/context_extension.dart';
+import 'package:gymbro/models/workout_model.dart';
+import 'package:gymbro/ui/workout_list_page.dart';
 
 import '../providers/fetch_state.dart';
+import '../providers/move_provider.dart';
+import '../services/api_service.dart';
 
 class WorkoutPage extends ConsumerStatefulWidget {
   const WorkoutPage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _WorkoutPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _MainDashboardPageState();
 }
 
-List<bool> selected = [false, false, false, false];
-Map<String, dynamic> valueFromWidget = {};
-
-List<Map> valuesFor = [];
-
-class _WorkoutPageState extends ConsumerState<WorkoutPage> {
+class _MainDashboardPageState extends ConsumerState<WorkoutPage> {
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await fun1();
+      await fun2(userID);
+
+      ref.read(getProgramProvider.notifier).fetch(gymID, userID);
+    });
   }
+
+  int userID = 0;
+  int gymID = 0;
+
+  Future<void> fun1() async {
+    final bla = await api.getUserID();
+    fun2(bla);
+    setState(() {
+      userID = bla;
+    });
+  }
+
+  Future<void> fun2(int userID) async {
+    final bla = await api.getGymID(userID);
+    setState(() {
+      gymID = bla;
+    });
+  }
+
+  List<bool> boolList = [];
 
   @override
   Widget build(BuildContext context) {
-    final workoutState = ref.watch(moveProvider('CHEST'));
-    final workoutStateShoulder = ref.watch(moveProvider('SHOULDER'));
+    final workouts = ref.watch(getProgramProvider);
+
+    print(gymID);
+    print(userID);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.arrow_right),
+      appBar: AppBar(
+        backgroundColor: AppColors.firstBlack,
+        title: const Text('Programlarım'),
+        actions: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+                onPressed: () {
+                  ref.read(getProgramProvider.notifier).fetch(gymID, userID);
+                },
+                icon: const Icon(Icons.refresh)),
+          ),
+        ],
       ),
-      appBar: AppBar(title: const Text('Workout')),
-      body: SingleChildScrollView(
-        child: Column(children: [
-          Card(
-            child: Column(
-              children: [
-                IgnorePointer(
-                  ignoring: selected[0],
-                  child: ExpansionTile(
-                    key: GlobalKey(),
-                    title: const Text('Chest'),
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Builder(builder: (context) {
-                          if (workoutState is Fetched<List<MoveModel>>) {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                final workoutMove = workoutState.value[index];
-                                return Column(
-                                  children: [
-                                    MoveTileWidget(workoutMove: workoutMove),
-                                  ],
-                                );
-                              },
-                              itemCount: workoutState.value.length,
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        }),
+      body: SafeArea(
+          child: SingleChildScrollView(
+              child: Column(
+        children: [
+          Builder(builder: (context) {
+            if (workouts is Fetched<List<WorkoutModel>>) {
+              final value = workouts.value;
+              print('this is value ');
+              print(value);
+
+              return ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  print(value[index].workouts[0].id);
+                  print('sa');
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Card(
+                      color: AppColors.secondWhite,
+                      elevation: 8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SizedBox(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Program ID : ${index + 1}',
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    onPressed: () async {
+                                      context.go((WorkoutListPage(
+                                        workouts: value,
+                                        indexA: index,
+                                      )));
+                                      ref
+                                          .read(getImagesProvider.notifier)
+                                          .fetch();
+                                    },
+                                    icon: const Icon(Icons.display_settings),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 400,
-                  color: selected[0] == false ? Colors.white : Colors.black,
-                  child: IconButton(
-                      color: selected[0] == false ? Colors.green : Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          selected[0] = !selected[0];
-                          print(valuesFor);
-                        });
-                      },
-                      icon: const Icon(Icons.done)),
-                ),
-                // CHEST //
-                IgnorePointer(
-                  ignoring: selected[1],
-                  child: ExpansionTile(
-                    key: GlobalKey(),
-                    title: const Text('SHOULDER'),
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Builder(builder: (context) {
-                          if (workoutStateShoulder
-                              is Fetched<List<MoveModel>>) {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                final workoutMove =
-                                    workoutStateShoulder.value[index];
-                                return Column(
-                                  children: [
-                                    MoveTileWidget(workoutMove: workoutMove),
-                                  ],
-                                );
-                              },
-                              itemCount: workoutStateShoulder.value.length,
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 400,
-                  color: selected[1] == false ? Colors.white : Colors.black,
-                  child: IconButton(
-                      color: selected[1] == false ? Colors.green : Colors.white,
-                      onPressed: () {
-                        print(valuesFor);
-                        setState(() {
-                          selected[1] = !selected[1];
-                          print(valuesFor);
-                        });
-                      },
-                      icon: const Icon(Icons.done)),
-                ),
-              ],
-            ),
-          )
-        ]),
-      ),
-    );
-  }
-}
-
-class MoveTileWidget extends StatefulWidget {
-  const MoveTileWidget({
-    super.key,
-    required this.workoutMove,
-  });
-
-  final MoveModel workoutMove;
-
-  @override
-  State<MoveTileWidget> createState() => _MoveTileWidgetState();
-}
-
-class _MoveTileWidgetState extends State<MoveTileWidget> {
-  TextEditingController setController = TextEditingController();
-  TextEditingController repeatController = TextEditingController();
-
-  IconData selectedIcon = Icons.arrow_right;
-  bool selected = false;
-  MaterialColor selectedColor = Colors.blue;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: selectedColor,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            widget.workoutMove.moveName.length >= 10
-                ? Text(widget.workoutMove.moveName.split("-").first)
-                : Text(widget.workoutMove.moveName),
-            Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 40,
-                  color: Colors.white,
-                  child: TextField(
-                    maxLength: 2,
-                    controller: setController,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(), counterText: ''),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Text('x'),
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  width: 60,
-                  height: 40,
-                  color: Colors.white,
-                  child: TextField(
-                    maxLength: 2,
-                    controller: repeatController,
-                    decoration: const InputDecoration(
-                      counterText: '',
-                      border: OutlineInputBorder(),
                     ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      if (selected == true) {
-                        selected = false;
-                        selectedIcon = Icons.arrow_right;
-                        selectedColor = Colors.blue;
-                        removefromList(
-                            int.parse(setController.text),
-                            int.parse(repeatController.text),
-                            widget.workoutMove.moveName,
-                            widget.workoutMove.moveArea);
-                      } else {
-                        selected = true;
-                        selectedIcon = Icons.arrow_back;
-                        selectedColor = Colors.green;
-                        addtoList(
-                            int.parse(setController.text),
-                            int.parse(repeatController.text),
-                            widget.workoutMove.moveName,
-                            widget.workoutMove.moveArea);
-                      }
-                    });
-                  },
-                  icon: Icon(selectedIcon),
-                  iconSize: 35,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+                  );
+                },
+                itemCount: value.length,
+              );
+            } else if (workouts is FetchError) {
+              return const Center(
+                child: Text('Görüntülenecek program yok'),
+              );
+            } else if (workouts is Fetching) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return const Text('Programlarınızı göremiyorsanız yenileyin');
+          }),
+        ],
+      ))),
     );
   }
-}
-
-void addtoList(int set, int repeat, String name, String area) async {
-  Map<String, dynamic> newMap = {
-    'name': name,
-    'setc': set,
-    'repeat': repeat,
-    'area': area
-  };
-
-  valuesFor.add(newMap);
-}
-
-void removefromList(int set, int repeat, String name, String area) {
-  valuesFor.removeWhere((element) => element['name'] == name);
 }

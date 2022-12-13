@@ -8,6 +8,8 @@ import 'package:gymbro/ui/sign_in_page.dart';
 import 'package:gymbro/ui/widgets/password_field.dart';
 import 'package:string_validator/string_validator.dart';
 
+import '../constants/appcolors.dart';
+
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -34,6 +36,10 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.firstBlack,
+        title: const Text('Kayıt Ol'),
+      ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -44,16 +50,11 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('go')),
-                  const Text(
-                    'Register',
-                  ),
                   const SizedBox(height: 16),
-                  const Text('Email'),
+                  const Text(
+                    'Email',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   TextFormField(
                     controller: _emailController,
@@ -65,16 +66,19 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
                         : null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Emailnizi girin';
                       } else if (!isEmail(value)) {
-                        return 'Please enter a valid email';
+                        return 'Lütfen geçerli bir email girin';
                       }
 
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-                  const Text('Username'),
+                  const Text(
+                    'Kullanıcı adı',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   TextFormField(
                     controller: _nameController,
@@ -86,16 +90,19 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
                         : null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
+                        return 'Lütfen kullanıcı adınızı girin ';
                       } else if (_nameController.text.length <= 4) {
-                        return 'Please enter a user name longer than 4 letter';
+                        return 'Lütfen 4 karakterden uzun bir kullanıcı adı girin';
                       }
 
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
-                  const Text('Password'),
+                  const Text(
+                    'Şifre',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   PasswordField(
                       controller: _passwordController,
@@ -104,7 +111,7 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
                           : null,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Şifrenizi girin';
                         } else {
                           return null;
                         }
@@ -121,7 +128,7 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
                           context.go(const SignInPage());
                         },
                         child: const Text(
-                          'Already have account?',
+                          'Hesabınız var mı?',
                         ),
                       ),
                     ],
@@ -141,7 +148,11 @@ class _SignInPageState extends ConsumerState<SignUpPage> {
                             const SnackBar(content: Text('Error')));
                       }
                     },
-                    child: const Text('Sign Up'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.black,
+                    ),
+                    child: const Text('Kayıt ol'),
                   ),
                   const SizedBox(height: 20),
                 ],

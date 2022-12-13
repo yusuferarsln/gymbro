@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gymbro/constants/appcolors.dart';
 import 'package:gymbro/extensions/context_extension.dart';
 import 'package:gymbro/ui/sign_up_page.dart';
 import 'package:gymbro/ui/widgets/password_field.dart';
@@ -32,6 +33,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.firstBlack,
+        title: const Text('Giriş Yap'),
+      ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -42,16 +47,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('go')),
-                  const Text(
-                    'Log in',
-                  ),
                   const SizedBox(height: 16),
-                  const Text('Email'),
+                  const Text(
+                    'Email',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   TextFormField(
                     controller: _emailController,
@@ -63,16 +63,16 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         : null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Mailinizi girin';
                       } else if (!isEmail(value)) {
-                        return 'Please enter a valid email';
+                        return 'Lütfen gerçek bir mail adresi girin';
                       }
 
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
-                  const Text('Password'),
+                  const Text('Şifre'),
                   const SizedBox(height: 4),
                   PasswordField(
                       controller: _passwordController,
@@ -81,7 +81,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           : null,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Lütfen şifrenizi girin';
                         } else {
                           return null;
                         }
@@ -98,7 +98,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           context.go(const SignUpPage());
                         },
                         child: const Text(
-                          "Don't have account?",
+                          "",
                         ),
                       ),
                     ],
@@ -114,7 +114,21 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           : ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Error')));
                     },
-                    child: const Text('Log in'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: AppColors.primaryWhite,
+                      backgroundColor: Colors.black,
+                    ),
+                    child: const Text('Giriş'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      context.go(const SignUpPage());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.secondWhite,
+                    ),
+                    child: const Text('Kayıt Ol'),
                   ),
                   const SizedBox(height: 20),
                 ],

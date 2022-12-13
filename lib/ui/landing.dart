@@ -17,8 +17,8 @@ class _MenteeLandingPageState extends ConsumerState<LandingPage>
 
   final List<Widget> screens = [
     const HomePage(),
+    const WorkoutPage(),
     const ProfilePage(),
-    const WorkoutPage()
   ];
 
   @override
@@ -50,12 +50,12 @@ class _MenteeLandingPageState extends ConsumerState<LandingPage>
             label: 'Spor Salonları',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Profil',
+            icon: Icon(Icons.sports_gymnastics),
+            label: 'Programlarım',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sports_gymnastics),
-            label: 'Workout',
+            icon: Icon(Icons.info),
+            label: 'Profil',
           ),
         ],
       ),
