@@ -77,21 +77,33 @@ packages:
       name: firebase_auth
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< Updated upstream
     version: "4.2.1"
+=======
+    version: "4.2.0"
+>>>>>>> Stashed changes
   firebase_auth_platform_interface:
     dependency: transitive
     description:
       name: firebase_auth_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< Updated upstream
     version: "6.11.5"
+=======
+    version: "6.11.4"
+>>>>>>> Stashed changes
   firebase_auth_web:
     dependency: transitive
     description:
       name: firebase_auth_web
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< Updated upstream
     version: "5.2.1"
+=======
+    version: "5.2.0"
+>>>>>>> Stashed changes
   firebase_core:
     dependency: "direct main"
     description:

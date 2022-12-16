@@ -26,7 +26,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ? Timer(const Duration(seconds: 5),
                 () => context.replace(const LandingPage()))
             : Timer(const Duration(seconds: 5),
-                () => context.go(const SignInPage()));
+                () => context.replace(const SignInPage()));
       }
     });
 
